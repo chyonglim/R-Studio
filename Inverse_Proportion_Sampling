@@ -1,0 +1,33 @@
+# Load the Package
+library(dplyr)
+
+# STEP 1. Ensure binary factor with correct level order 
+final_data$crcd <- factor(final_data$crcd, levels = c("No", "Yes")) # crcd is DV (No = 83%, Yes = 17%)
+
+# STEP 2. Compute class counts
+n_total <- nrow(final_data)
+n_no <- sum(final_data$crcd == "No") # majority
+n_yes <- sum(final_data$crcd == "Yes") # minority
+
+# STEP 3. Assign higher weight to minority class ("Yes")
+final_data$weights <- ifelse(
+  final_data$crcd == "Yes", 
+  1 / n_yes, # higher weight
+  1 / n_no # lower weight
+)
+
+# STEP 4. Normalize weights (optional, for interpretation or plotting)
+final_data$weights <- final_data$weights / sum(final_data$weights) * n_total
+
+# STEP 5. Check mean weights per group
+tapply(final_data$weights, final_data$crcd, mean)
+
+# STEP 6. Summarize raw and weighted proportions
+summary_df <- final_data %>%
+  group_by(crcd) %>%
+  summarise(
+    Raw_N = n(),
+    Raw_Prop = n() / n_total,
+    Weighted_N = sum(weights),
+    Weighted_Prop = sum(weights) / sum(final_data$weights)
+  )
