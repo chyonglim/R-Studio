@@ -1,7 +1,7 @@
 # Load the Package
 library(dplyr)
 
-# STEP 1. Ensure binary factor with correct level order 
+# STEP 1. Ensure the binary factor with the correct level order 
 final_data$crcd <- factor(final_data$crcd, levels = c("No", "Yes")) # crcd is DV (No = 83%, Yes = 17%)
 
 # STEP 2. Compute class counts
